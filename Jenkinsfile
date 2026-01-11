@@ -80,7 +80,7 @@ stage('Performance') {
         sh '''
             mkdir -p reports/performance
             if command -v jmeter >/dev/null 2>&1; then
-                jmeter -n -t performance/test-plan.jmx -l reports/performance/results.jtl
+                jmeter -n -t test/jmeter/flask.jmx -l reports/performance/results.jtl
             else
                 echo "JMeter no disponible al Jenkins docent, prova de rendiment omesa"
             fi
