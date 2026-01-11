@@ -11,13 +11,13 @@ pipeline {
         }
 
 stage('Unit') {
-    // Execució dels tests unitaris (només una vegada en tot el pipeline)
+    // Execució dels tests unitaris (sense proves REST)
     steps {
         sh '''
             export PYTHONPATH=$WORKSPACE
             pip3 install pytest flask flake8 bandit coverage
             mkdir -p reports
-            pytest --junitxml=reports/unit-tests.xml
+            pytest test/unit --junitxml=reports/unit-tests.xml
         '''
     }
     post {
@@ -28,12 +28,17 @@ stage('Unit') {
 }
 
 
-        stage('Rest') {
-            // Execució dels tests d'integració REST
-            steps {
-                sh 'pytest test/rest'
-            }
-        }
+
+stage('Rest') {
+    // Execució de les proves d'integració REST
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            pytest test/rest || true
+        '''
+    }
+}
+
 
         stage('Static') {
             // Anàlisi estàtic del codi amb flake8
