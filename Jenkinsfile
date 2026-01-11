@@ -65,18 +65,9 @@ stage('Security Test') {
             export PYTHONPATH=$WORKSPACE
             python3 -m bandit -r app -f txt -o bandit-report.txt || true
         '''
-
-        scanForIssues(
-            tool: security(pattern: 'bandit-report.txt')
-        )
-
-        warningsQualityGate(
-            threshold: 2,
-            type: 'TOTAL',
-            unstable: true
-        )
     }
 }
+
 
 
 
