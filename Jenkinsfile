@@ -128,6 +128,24 @@ stage('Coverage') {
 
 
 
+stage('Coverage') {
+    // Mesura de la cobertura només sobre tests unitaris
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            python3 -m coverage run -m pytest test/unit
+            python3 -m coverage xml -o coverage.xml
+            python3 -m coverage report
+        '''
+    }
+    post {
+        always {
+            publishCoverage adapters: [
+                coberturaAdapter('coverage.xml')
+            ]
+        }
+    }
+}
 
 
 
