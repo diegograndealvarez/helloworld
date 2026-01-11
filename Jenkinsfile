@@ -59,14 +59,14 @@ stage('Static') {
 
 
 stage('Security Test') {
-    // Anàlisi de seguretat del codi amb bandit
+    // Anàlisi de seguretat del codi amb Bandit
     steps {
         sh '''
             export PYTHONPATH=$WORKSPACE
             python3 -m bandit -r app -f txt -o bandit-report.txt || true
         '''
         recordIssues(
-            tools: [bandit(pattern: 'bandit-report.txt')],
+            tools: [security(pattern: 'bandit-report.txt')],
             qualityGates: [
                 [threshold: 2, type: 'TOTAL', unstable: true],
                 [threshold: 4, type: 'TOTAL', unstable: true]
