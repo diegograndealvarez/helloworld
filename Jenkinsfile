@@ -14,6 +14,7 @@ stage('Unit') {
     // Execució dels tests unitaris (només una vegada en tot el pipeline)
     steps {
         sh '''
+            export PYTHONPATH=$WORKSPACE
             pip3 install pytest flask flake8 bandit coverage
             mkdir -p reports
             pytest --junitxml=reports/unit-tests.xml
