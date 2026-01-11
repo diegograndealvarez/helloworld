@@ -73,19 +73,17 @@ stage('Security Test') {
 
 
 
-        stage('Coverage') {
-            // Càlcul de la cobertura reutilitzant els tests unitaris
-            steps {
-                sh '''
-                    coverage run -m pytest
-                    coverage xml -o coverage.xml
-                    coverage report
-                '''
-                publishCoverage adapters: [
-                    coberturaAdapter('coverage.xml')
-                ]
-            }
-        }
+stage('Coverage') {
+    // Execució dels tests amb cobertura de codi
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            python3 -m coverage run -m pytest
+            python3 -m coverage report --fail-under=80
+        '''
+    }
+}
+
 
         stage('Performance') {
             // Execució de proves de càrrega amb JMeter
