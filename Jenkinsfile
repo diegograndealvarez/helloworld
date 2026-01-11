@@ -67,7 +67,7 @@ stage('Security Test') {
         '''
 
         scanForIssues(
-            tool: bandit(pattern: 'bandit-report.txt')
+            tool: security(pattern: 'bandit-report.txt')
         )
 
         warningsQualityGate(
@@ -77,6 +77,7 @@ stage('Security Test') {
         )
     }
 }
+
 
 
 
