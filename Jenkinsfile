@@ -10,6 +10,16 @@ pipeline {
             }
         }
 
+
+
+
+
+
+
+
+
+
+
 stage('Unit') {
     // Execució dels tests unitaris (sense proves REST)
     steps {
@@ -29,6 +39,11 @@ stage('Unit') {
 
 
 
+
+
+
+
+
 stage('Rest') {
     // Execució de les proves d'integració REST
     steps {
@@ -38,6 +53,16 @@ stage('Rest') {
         '''
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 stage('Static') {
@@ -58,6 +83,14 @@ stage('Static') {
 }
 
 
+
+
+
+
+
+
+
+
 stage('Security Test') {
     // Anàlisi de seguretat del codi amb Bandit
     steps {
@@ -67,6 +100,14 @@ stage('Security Test') {
         '''
     }
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -86,6 +127,14 @@ stage('Coverage') {
 
 
 
+
+
+
+
+
+
+
+
 stage('Performance') {
     // Proves de rendiment amb JMeter (no disponible al Jenkins docent)
     steps {
@@ -97,5 +146,12 @@ stage('Performance') {
 
 
 
+
+
+
+
+
+
 }
 
+}
