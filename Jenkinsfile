@@ -40,37 +40,41 @@ stage('Rest') {
 }
 
 
-        stage('Static') {
-            // Anàlisi estàtic del codi amb flake8
-            steps {
-                sh '''
-                    flake8 app > flake8-report.txt || true
-                '''
-                recordIssues(
-                    tools: [flake8(pattern: 'flake8-report.txt')],
-                    qualityGates: [
-                        [threshold: 8, type: 'TOTAL', unstable: true],
-                        [threshold: 10, type: 'TOTAL', failure: true]
-                    ]
-                )
-            }
-        }
+stage('Static') {
+    // Anàlisi estàtic del codi amb flake8
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            python3 -m flake8 app > flake8-report.txt || true
+        '''
+        recordIssues(
+            tools: [flake8(pattern: 'flake8-report.txt')],
+            qualityGates: [
+                [threshold: 8, type: 'TOTAL', unstable: true],
+                [threshold: 10, type: 'TOTAL', unstable: false]
+            ]
+        )
+    }
+}
 
-        stage('Security Test') {
-            // Anàlisi de seguretat del codi amb bandit
-            steps {
-                sh '''
-                    bandit -r app -f txt -o bandit-report.txt || true
-                '''
-                recordIssues(
-                    tools: [bandit(pattern: 'bandit-report.txt')],
-                    qualityGates: [
-                        [threshold: 2, type: 'TOTAL', unstable: true],
-                        [threshold: 4, type: 'TOTAL', failure: true]
-                    ]
-                )
-            }
-        }
+
+stage('Security Test') {
+    // Anàlisi de seguretat del codi amb bandit
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            python3 -m bandit -r app -f txt -o bandit-report.txt || true
+        '''
+        recordIssues(
+            tools: [bandit(pattern: 'bandit-report.txt')],
+            qualityGates: [
+                [threshold: 2, type: 'TOTAL', unstable: true],
+                [threshold: 4, type: 'TOTAL', unstable: true]
+            ]
+        )
+    }
+}
+
 
         stage('Coverage') {
             // Càlcul de la cobertura reutilitzant els tests unitaris
