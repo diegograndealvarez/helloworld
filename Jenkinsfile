@@ -10,20 +10,22 @@ pipeline {
             }
         }
 
-        stage('Unit') {
-            // Execució dels tests unitaris (només una vegada en tot el pipeline)
-            steps {
-                sh '''
-                    pip3 install -r requirements.txt
-                    pytest --junitxml=reports/unit-tests.xml
-                '''
-            }
-            post {
-                always {
-                    junit 'reports/unit-tests.xml'
-                }
-            }
+stage('Unit') {
+    // Execució dels tests unitaris (només una vegada en tot el pipeline)
+    steps {
+        sh '''
+            pip3 install pytest flask flake8 bandit coverage
+            mkdir -p reports
+            pytest --junitxml=reports/unit-tests.xml
+        '''
+    }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: 'reports/unit-tests.xml'
         }
+    }
+}
+
 
         stage('Rest') {
             // Execució dels tests d'integració REST
