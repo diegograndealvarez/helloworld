@@ -74,15 +74,16 @@ stage('Security Test') {
 
 
 stage('Coverage') {
-    // Execució dels tests amb cobertura de codi
+    // Mesura de la cobertura només sobre tests unitaris
     steps {
         sh '''
             export PYTHONPATH=$WORKSPACE
-            python3 -m coverage run -m pytest
+            python3 -m coverage run -m pytest test/unit
             python3 -m coverage report --fail-under=80
         '''
     }
 }
+
 
 
         stage('Performance') {
