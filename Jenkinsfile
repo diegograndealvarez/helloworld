@@ -136,13 +136,17 @@ stage('Coverage') {
 
 
 stage('Performance') {
-    // Proves de rendiment amb JMeter (no disponible al Jenkins docent)
-    steps {
-        sh '''
-            jmeter -n -t performance/test-plan.jmx -l performance/results.jtl
-        ''' || true
-    }
+  steps {
+    sh '''
+      if command -v jmeter >/dev/null 2>&1; then
+        jmeter -n -t performance/test-plan.jmx -l performance/results.jtl
+      else
+        echo "JMeter no disponible al Jenkins docent, prova de rendiment omesa"
+      fi
+    '''
+  }
 }
+
 
 
 
