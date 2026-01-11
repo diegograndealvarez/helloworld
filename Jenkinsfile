@@ -123,13 +123,10 @@ stage('Coverage') {
             python3 -m coverage xml -o coverage.xml
             python3 -m coverage report
         '''
-    }
-    post {
-        always {
-            cobertura coberturaReportFile: 'coverage.xml'
-        }
+        archiveArtifacts artifacts: 'coverage.xml', fingerprint: true
     }
 }
+
 
 
 
