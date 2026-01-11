@@ -116,7 +116,6 @@ stage('Security Test') {
 
 
 stage('Coverage') {
-    // Mesura de la cobertura només sobre tests unitaris
     steps {
         sh '''
             export PYTHONPATH=$WORKSPACE
@@ -127,12 +126,11 @@ stage('Coverage') {
     }
     post {
         always {
-            publishCoverage adapters: [
-                coberturaAdapter('coverage.xml')
-            ]
+            cobertura coberturaReportFile: 'coverage.xml'
         }
     }
 }
+
 
 
 
