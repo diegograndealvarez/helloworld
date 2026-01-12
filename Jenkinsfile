@@ -61,6 +61,22 @@ pipeline {
             }
         }
 
+
+stage('Security Test') {
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            mkdir -p reports/security
+            python3 -m bandit -r app -f json -o reports/security/bandit-report.json || true
+        '''
+        recordIssues(
+            tools: [bandit(pattern: 'reports/security/bandit-report.json')]
+        )
+
+    }
+}
+
+
 stage('Coverage') {
     steps {
         sh '''
