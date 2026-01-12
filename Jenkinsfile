@@ -75,29 +75,40 @@ pipeline {
         }
 
 stage('Performance') {
-    steps {
-        sh '''
-            echo "Arrancando Flask en background..."
-            export FLASK_APP=app/api.py
-            flask run --host=127.0.0.1 --port=5000 &
+  steps {
+    sh '''
+      set -e
+      export PYTHONPATH=$WORKSPACE
+      mkdir -p reports/performance
 
-            FLASK_PID=$!
-            sleep 3
+      # Levantar Flask en background
+      export FLASK_APP=app/api.py
+      nohup flask run --host=127.0.0.1 --port=5000 > reports/performance/flask.log 2>&1 &
+      FLASK_PID=$!
 
-            echo "Ejecutando JMeter..."
-            mkdir -p reports/performance
-            jmeter -n -t test/jmeter/flask.jmx -l reports/performance/results.jtl
+      # Esperar a que el puerto responda (hasta ~10s)
+      for i in $(seq 1 20); do
+        if curl -s http://127.0.0.1:5000/calc/add/1/2 >/dev/null; then
+          echo "Flask OK"
+          break
+        fi
+        sleep 0.5
+      done
 
-            echo "Parando Flask..."
-            kill $FLASK_PID || true
-        '''
+      # Ejecutar JMeter (tu .jmx)
+      jmeter -n -t test/jmeter/flask.jmx -l reports/performance/results.jtl
+
+      # Parar Flask
+      kill $FLASK_PID || true
+    '''
+  }
+  post {
+    always {
+      perfReport sourceDataFiles: 'reports/performance/results.jtl'
     }
-    post {
-        always {
-            perfReport sourceDataFiles: 'reports/performance/results.jtl'
-        }
-    }
+  }
 }
+
 
 
 
