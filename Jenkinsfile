@@ -70,9 +70,17 @@ pipeline {
                     python3 -m coverage xml -o reports/unit/coverage.xml
                     python3 -m coverage report
                 '''
+                cobertura coberturaReportFile: 'reports/unit/coverage.xml'
                 archiveArtifacts artifacts: 'reports/unit/coverage.xml', fingerprint: true
             }
         }
+
+
+
+
+
+
+
 
 stage('Performance') {
   steps {
