@@ -75,24 +75,11 @@ pipeline {
         }
 
 stage('Performance') {
-    // Proves de rendiment amb Apache JMeter
     steps {
         sh '''
             mkdir -p reports/performance
-            if command -v jmeter >/dev/null 2>&1; then
-                jmeter -n \
-                    -t test/jmeter/flask.jmx \
-                    -l reports/performance/results.jtl \
-                    -Jxstream.allowlist=org.apache.jmeter.save.ScriptWrapper
-            else
-                echo "JMeter no disponible al Jenkins docent, prova de rendiment omesa"
-            fi
+            jmeter -n -t test/jmeter/flask.jmx -l reports/performance/results.jtl
         '''
-    }
-    post {
-        always {
-            perfReport sourceDataFiles: 'reports/performance/results.jtl'
-        }
     }
 }
 
