@@ -75,13 +75,20 @@ pipeline {
         }
 
 stage('Performance') {
+    // Proves de rendiment amb JMeter
     steps {
         sh '''
             mkdir -p reports/performance
             jmeter -n -t test/jmeter/flask.jmx -l reports/performance/results.jtl
         '''
     }
+    post {
+        always {
+            perfReport sourceDataFiles: 'reports/performance/results.jtl'
+        }
+    }
 }
+
 
 
 
