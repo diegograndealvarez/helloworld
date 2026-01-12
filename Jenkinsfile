@@ -65,17 +65,20 @@ stage('Coverage') {
     steps {
         sh '''
             export PYTHONPATH=$WORKSPACE
-            mkdir -p reports/unit
-            python3 -m coverage run -m pytest test/unit
-            python3 -m coverage xml -o reports/unit/coverage.xml
-            python3 -m coverage report
+            coverage run --branch --source=app -m pytest test/unit
+            coverage xml -o coverage.xml
         '''
-        recordCoverage(
-            tools: [[parser: 'COBERTURA', pattern: 'reports/unit/coverage.xml']]
-        )
-        archiveArtifacts artifacts: 'reports/unit/coverage.xml', fingerprint: true
+
+        script {
+            recordCoverage(
+                tools: [[parser: 'COBERTURA', pattern: 'coverage.xml']]
+            )
+        }
+
+        archiveArtifacts artifacts: 'coverage.xml', fingerprint: true
     }
 }
+
 
 
 
