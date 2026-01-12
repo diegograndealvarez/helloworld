@@ -75,11 +75,21 @@ pipeline {
         }
 
 stage('Performance') {
-    // Proves de rendiment amb JMeter
     steps {
         sh '''
+            echo "Arrancando Flask en background..."
+            export FLASK_APP=app/api.py
+            flask run --host=127.0.0.1 --port=5000 &
+
+            FLASK_PID=$!
+            sleep 3
+
+            echo "Ejecutando JMeter..."
             mkdir -p reports/performance
             jmeter -n -t test/jmeter/flask.jmx -l reports/performance/results.jtl
+
+            echo "Parando Flask..."
+            kill $FLASK_PID || true
         '''
     }
     post {
@@ -88,6 +98,7 @@ stage('Performance') {
         }
     }
 }
+
 
 
 
