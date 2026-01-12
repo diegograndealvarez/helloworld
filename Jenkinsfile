@@ -53,19 +53,33 @@ pipeline {
 
 
 
-        stage('Security Test') {
-            steps {
-                sh '''
-                    export PYTHONPATH=$WORKSPACE
-                    mkdir -p reports/security
-                    python3 -m bandit -r app -f json -o reports/security/bandit-report.json || true
-                '''
+stage('Security') {
+    steps {
+        sh '''
+            export PYTHONPATH=$WORKSPACE
+            mkdir -p reports/security
 
-                recordIssues(
-                    tools: [bandit(pattern: 'reports/security/bandit-report.json')]
+            bandit --exit-zero -r app \
+              -f custom \
+              -o reports/security/bandit.out \
+              --msg-template "{abspath}:{line}: [{test_id}] {msg}"
+        '''
+
+        recordIssues(
+            tools: [
+                pyLint(
+                    name: 'Bandit',
+                    pattern: 'reports/security/bandit.out'
                 )
-            }
-        }
+            ],
+            qualityGates: [
+                [threshold: 2, type: 'TOTAL', unstable: true],
+                [threshold: 4, type: 'TOTAL', unstable: false]
+            ]
+        )
+    }
+}
+
 
 
 
