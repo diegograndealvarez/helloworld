@@ -59,7 +59,7 @@ stage('Security') {
             export PYTHONPATH=$WORKSPACE
             mkdir -p reports/security
 
-            bandit --exit-zero -r app \
+            python3 -m bandit --exit-zero -r app \
               -f custom \
               -o reports/security/bandit.out \
               --msg-template "{abspath}:{line}: [{test_id}] {msg}"
@@ -79,6 +79,7 @@ stage('Security') {
         )
     }
 }
+
 
 
 
