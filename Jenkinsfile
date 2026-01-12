@@ -65,8 +65,8 @@ stage('Coverage') {
     steps {
         sh '''
             export PYTHONPATH=$WORKSPACE
-            coverage run --branch --source=app -m pytest test/unit
-            coverage xml -o coverage.xml
+            python3 -m coverage run --branch --source=app -m pytest test/unit
+            python3 -m coverage xml -o coverage.xml
         '''
 
         script {
@@ -78,6 +78,7 @@ stage('Coverage') {
         archiveArtifacts artifacts: 'coverage.xml', fingerprint: true
     }
 }
+
 
 
 
