@@ -13,10 +13,10 @@ pipeline {
 
   stages {
 
-    stage('Get Code (master)') {
+    stage('Get Code (built-in)') {
       // El checkout es fa al node principal
       // El codi es comparteix amb la resta d’agents mitjançant stash
-      agent { label 'master' }
+      agent { label 'built-in' }
       steps {
         cleanWs()
         sh '''
