@@ -41,3 +41,11 @@ def test_substract_endpoint_ok(client):
     response = client.get("/calc/substract/5/2")
     assert response.status_code == 200
     assert response.data == b"3"
+
+def test_substract_endpoint_bad_request(client):
+    # Comprova que l'endpoint /calc/substract gestiona correctament
+    # errors de tipus quan els paràmetres no són numèrics
+    # Aquest test cobreix la branca except del controlador
+    response = client.get("/calc/substract/a/2")
+    assert response.status_code == 400
+    
