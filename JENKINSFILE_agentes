@@ -46,7 +46,7 @@ pipeline {
               export PYTHONPATH=$WORKSPACE
               pip3 install pytest flask flake8 bandit coverage
               mkdir -p reports/unit
-              pytest test --junitxml=reports/unit/unit-tests.xml
+              pytest test/unit test/api --junitxml=reports/unit/unit-tests.xml
             '''
           }
           post {
@@ -208,7 +208,7 @@ pipeline {
           hostname
           echo ${WORKSPACE}
           export PYTHONPATH=$WORKSPACE
-          python3 -m coverage run --branch --source=app -m pytest test
+          python3 -m coverage run --branch --source=app -m pytest test/unit test/api
           python3 -m coverage xml -o coverage.xml
         '''
         script {
