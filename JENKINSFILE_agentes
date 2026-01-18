@@ -59,24 +59,75 @@ pipeline {
         }
 
         stage('Rest') {
-          // Proves REST executades en un agent separat
-          agent { label 'agent-rest' }
-          steps {
-            cleanWs()
-            unstash 'src'
-            sh '''
-              whoami
-              hostname
-              echo ${WORKSPACE}
-              export PYTHONPATH=$WORKSPACE
-              pytest test/rest || true
-            '''
+            agent { label 'agent-rest' }
+
+            steps {
+                sh '''
+                    # Identitat de l'agent
+                    whoami
+                    hostname
+                    echo $WORKSPACE
+
+                    # Variables d'entorn
+                    export PYTHONPATH=$WORKSPACE
+                    export FLASK_APP=app/api.py
+
+                    # -----------------------------
+                    # Arrencar WireMock en background
+                    # -----------------------------
+                    wget -q https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-jre8-standalone/2.35.0/wiremock-jre8-standalone-2.35.0.jar
+
+                    mkdir -p mappings
+                    cat << 'EOF' > mappings/sqrt64.json
+        {
+          "request": {
+            "method": "GET",
+            "url": "/calc/sqrt/64"
+          },
+          "response": {
+            "status": 200,
+            "body": "8"
           }
-          post {
-            always {
-              cleanWs()
+        }
+        EOF
+
+                    nohup java -jar wiremock-jre8-standalone-2.35.0.jar \
+                      --port 9090 \
+                      --root-dir . \
+                      > wiremock.log 2>&1 &
+                    WIREMOCK_PID=$!
+
+                    # Esperar que WireMock respongui
+                    for i in {1..20}; do
+                      curl -s http://127.0.0.1:9090/__admin && break
+                      sleep 0.5
+                    done
+
+                    # -----------------------------
+                    # Arrencar Flask en background
+                    # -----------------------------
+                    nohup flask run --host=127.0.0.1 --port=5000 \
+                      > flask.log 2>&1 &
+                    FLASK_PID=$!
+
+                    # Esperar que Flask respongui
+                    for i in {1..20}; do
+                      curl -s http://127.0.0.1:5000/calc/add/1/2 && break
+                      sleep 0.5
+                    done
+
+                    # -----------------------------
+                    # Executar tests REST
+                    # -----------------------------
+                    pytest test/rest || true
+
+                    # -----------------------------
+                    # Aturar serveis
+                    # -----------------------------
+                    kill $FLASK_PID
+                    kill $WIREMOCK_PID
+                '''
             }
-          }
         }
 
         stage('Static') {
