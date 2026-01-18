@@ -78,19 +78,19 @@ class TestCalculate(unittest.TestCase):
         self.assertEqual(0, self.calc.substract(0, 0))
         self.assertRaises(TypeError, self.calc.substract, "0", 0)
 
-# Reto 3
+    # Reto 3
 
     def test_divide_by_zero_raises_type_error(self):
         # Comprova que la divisió per zero genera una excepció de tipus TypeError
         # Aquest test cobreix la branca on y == 0 dins del mètode divide()
-    with self.assertRaises(TypeError):
-        self.calc.divide(10, 0)
+        with self.assertRaises(TypeError):
+            self.calc.divide(10, 0)
     
     def test_check_types_fails_when_both_params_invalid(self):
         # Comprova que el mètode valida correctament el tipus dels dos paràmetres
         # Aquest test força l'execució completa de la condició lògica (or) a check_types()
-    with self.assertRaises(TypeError):
-        self.calc.add(None, None)
+        with self.assertRaises(TypeError):
+            self.calc.add(None, None)
 
     def test_power_with_zero_base(self):
         # Comprova el càlcul de la potència amb base zero
